@@ -53,17 +53,34 @@ docker build -t <nombre imagen>:<tag> .
 ### Ejecutar el archivo Dockerfile y construir una imagen en la versión 1.0
 No olvides verificar en qué directorio se encuentra el archivo Dockerfile
 ```
-
+docker build -t sarity:1.0 .
+```
+Dockerfile de Centos 9 ya que a Centos 7 es una version que ya no dan soporte.
+```
+FROM rockylinux:9
+RUN dnf -y update && dnf -y install httpd && dnf clean all
+COPY ./web/ /var/www/html/
+EXPOSE 80
+CMD ["/usr/sbin/httpd", "-DFOREGROUND"]
 ```
 
 **¿Cuántos pasos se han ejecutado?**
 # RESPONDER 
+Se han ejecutado tres pasos.
+```
+FROM rockylinux:9
+RUN dnf -y update && dnf -y install httpd && dnf clean all
+COPY ./web/ /var/www/html/
+```
 
 ### Inspeccionar la imagen creada
 # COMPLETAR CON UNA CAPTURA
+<img width="1200" height="1138" alt="image" src="https://github.com/user-attachments/assets/59c577b2-4338-4d14-8b8b-2e03d28062a8" />
 
 **Modificar el archivo index.html para incluir su nombre y luego crear una nueva versión de la imagen anterior**
 **¿Cuántos pasos se han ejecutado? ¿Observa algo diferente en la creación de la imagen**
+
+Se vuelve a ejecutar tres pasos y si se observa la salida de la creación de la imagen diferente, ya que, como docker reutiliza las capas ya creadas antes, este muestra como [CACHE] a dos pasos y el unico paso que se vuelve a ejecutar es el COPY por lo que el archivo ya ha cambiado. 
 
 ## Mecanismo de caché
 Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso de construcción y evitar la repetición de pasos que no han cambiado. Cada instrucción en un Dockerfile crea una capa en la imagen final. Docker intenta reutilizar las capas de una construcción anterior si no han cambiado, lo que reduce significativamente el tiempo de construcción.
@@ -75,14 +92,19 @@ Docker usa un mecanismo de caché cuando crea imágenes para acelerar el proceso
 
 ### Crear un contenedor a partir de las imagen creada, mapear todos los puertos
 ```
-
+docker run -d --name DannaServer -p 8080:80 sarity:2.0
 ```
 
 ### ¿Con que puerto host se está realizando el mapeo?
 # COMPLETAR CON LA RESPUESTA
+```
+El mapeo se esta realizando en el puerto 8080
+```
 
 **¿Qué es una imagen huérfana?**
 # COMPLETAR CON LA RESPUESTA
+
+Una imagen huérfana es una imagen que no esta asociada a ningun contenedor y no contienen ninguna etiqueta, además estas se crean cuando se reconstruye una imagen con el mismo tag o nombre. 
 
 ### Identificar imágenes huérfanas
 ```
